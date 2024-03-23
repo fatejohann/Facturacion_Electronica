@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "ethereal-effort-240121",
+  "private_key_id": "aef03aac1251348ef27e30abbe24602fa1998bad",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCQgXrlSQV/lR2g\n820MmIctyMLw8ePNbsiiM4Ia9MfDcO8p+LXzzrSSmFjuLtBUiGnYZG7s/pV4IEnj\ngiq6DUu6J26xG8V1ptvI6KyxHDnb01KrlH601eRJmqgxTIeFdOHZ62zkSHXaXJod\nY1NVNYTv6Yk2MrkeBlWmH6cDpWGg0VHXXhv6GxdovSyVyAP5ZuI4pe6n2mSiwReo\nhZKKIYrZIlTC9FIbeq6kefPcvI8k5PXHa7p6CDX9X/IwV2srZ4rBqppirXQxLi+L\ntOf1R47Zb90Dv2dwSySJXCIzW5jNOv5nvS21rCS+h5Szrhf4yTytvP8QXSvMReGQ\nOzDOXurTAgMBAAECggEAEkQLoMfmJgZXRG0Ar8Ln82WZHpO009bZDYetPnMKfS3d\nTVTeyv6p3I3dT94i/0xu9KddTh+wDQsny9Y8SGA93j31w/VatFBvH6opigmjVqIT\npRSUH4+Z16Pw9qpRxxDLK5ySmxh9rShfYq+XbQHi1+CRM4Sd2am7UdBWcCOLf6RF\nL4o6PVD5Q5XdPDpUdJat0nGIl8oEC3qSxrPjgJ0dH24t4B6M4QH7wKEZsVYQJJ2g\nP6AuOMf4uHxL3csccNhJxbhKjgh4zgUF6X617ZTVsG8kxuBWhn4W90LnCLzE43eq\nF0Ck0iVDmvEpRCDK12qypr8E5Ng6Cy734s7oX/0YAQKBgQDCamWKMjU5NRoHhq0w\n9NgK4Xw+nA4e28FtjM8w6P4B8cLQzSCcDdXdCcYYDGqbkdwv34LHgmzgc0W6l2nS\n/WaWFcxmaT8lFp/8o4avfWJZAfy7ShVhozPm8NhFZgCOeDhpbPPsPVY2lx+3SDkn\nz7VWGH6d77RhPrs19FVd/i8T0wKBgQC+R8guqIZcJRP6Gd9YjUyiZmMSxWHZE46d\nFu7NxjQLi21xeJhYvXR2i5h3+9bJ1Zs58E1jbJlu/Ub0KhR2jwQ2XurtMlKIQk1O\nBhNKgbLsQN1mg7wmeIV1DkJmo/Omke8AzXWxIQBWOoq3jgElTpuvp5w2PQ4v7sr6\nK9GzM+VtAQKBgCfeqfQtV7zjpvLkK6Bele+lTlWIq1yotIJC3jqpjW3YppsrdgSK\n0dECsB0+bp54yy8GJ0vC85EUErixVIJwdRlSXxihfNGeUjD9WCGlFQYr4iiGiNv9\nHCfAPJn+0R5miSsVrPBFo+iOFXMA3LfNYOLHIzBAeD15H+twsBEWj5EBAoGAAUz8\nUVVVlcurF0qV/ET7ASEyDC7NPG6lyu0dNMrmEC4j0WLBp9mjsivCHw/ZqAeNyBec\nb9GOOvQASCsBeM4BeV2svXJanhPV83KXLyszzemjmc/MuXaZcvNmAM2eHMVinN7K\nrytKlUxRJnASEe83oTvEFZrVPf6j5JHoHRF9wAECgYBNlw7mdQITaJUeW+LVmLCA\n7A1vxkXeXJyX8oh7o6wWqUscUA3HB6YzrsKLw5QCGFMCwv+TVtzzbBOR0bPXfxBA\nea6ArbVbDLIOPsBGIP/Uw4rMqqCtYT+f4fsS/9RWyq6Fqvc3FzCmcutDFYtStJlK\nDQJbT+dgws0KhJCDdUbCsA==\n-----END PRIVATE KEY-----\n",
+  "client_email": "facturacion@ethereal-effort-240121.iam.gserviceaccount.com",
+  "client_id": "115020060129275069649",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/facturacion%40ethereal-effort-240121.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
