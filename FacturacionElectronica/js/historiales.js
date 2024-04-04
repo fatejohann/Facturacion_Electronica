@@ -1,7 +1,7 @@
 //inicio 
 function showToken() {
     hideAllSections();
-    document.getElementById("H.TokenSection").style.display = "none";
+    document.getElementById("H.TokenSection").style.display = "block";
   }
   
   function showTiposdeDocumento() {

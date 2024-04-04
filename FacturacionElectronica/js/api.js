@@ -82,6 +82,8 @@ function handleAuthClick() {
     document.getElementById("signout_button").style.visibility = "visible";
     document.getElementById("authorize_button").innerText = "Refresh";
     await getEmisor(); // Llamar a la función para obtener los datos
+    getToken();
+    getReceptor();
   };
 
   if (gapi.client.getToken() === null) {

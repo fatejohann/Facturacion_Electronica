@@ -1,4 +1,6 @@
 let emisor;
+let receptor;
+let token;
 
 async function getEmisor(){
     let response;
@@ -35,12 +37,86 @@ async function getEmisor(){
                       </tr>`;
             tableBody.innerHTML += tr;
         });
-        document.getElementById("hEmisorSection").style.display = "block"; // Mostrar la sección.
+        document.getElementById("H.EmisorSection").style.display = "none"; // Mostrar la sección.
     } else {
-        document.getElementById('hEmisorSection').innerHTML = '<p>No se encontraron datos.</p>';
+        document.getElementById('H.EmisorSection').innerHTML = '<p>No se encontraron datos.</p>';
     }
 }
 
+
+async function getToken() {
+    let response;
+    try {
+        response = await gapi.client.sheets.spreadsheets.values.get({
+            spreadsheetId: '1J__Pzj8RNIrwlojeF-mjBdWYtt9GH3QH3Je5SamLfSI',
+            range: 'h.token!A:D', // Asegúrate de que este rango cubra todas las columnas necesarias.
+        });
+    } catch (err) {
+        console.error('The API returned an error: ' + err);
+        return;
+    }
+
+    const rows = response.result.values;
+    if (rows.length > 0) {
+        const tableBody = document.getElementById('hTokenTableBody');
+        tableBody.innerHTML = ''; // Limpiar el cuerpo de la tabla antes de agregar nuevos datos.
+        // Saltarse la primera fila si contiene los encabezados de las columnas.
+        rows.slice(1).forEach((row) => {
+            // Crea una fila de tabla por cada registro.
+            let tr = `<tr>
+                        <td>${row[0]}</td>
+                        <td>${row[1]}</td>
+                        <td>${row[2]}</td>
+                        <td>${row[3]}</td>
+                    </tr>`;
+            tableBody.innerHTML += tr;
+        });
+        document.getElementById("H.TokenSection").style.display = "block"; // Mostrar la sección.
+    } else {
+        document.getElementById('H.TokenSection').innerHTML = '<p>No se encontraron datos.</p>';
+    }
+}
+
+// Llama a la función para obtener y mostrar los datos del token.
+
+
+async function getReceptor(){
+    let response;
+    try {
+        response = await gapi.client.sheets.spreadsheets.values.get({
+            spreadsheetId: '1J__Pzj8RNIrwlojeF-mjBdWYtt9GH3QH3Je5SamLfSI',
+            range: 'h.receptor!A:K', // Asegúrate de que este rango cubra todas las columnas necesarias.
+        });
+    } catch (err) {
+        console.error('The API returned an error: ' + err);
+        return;
+    }
+
+    const rows = response.result.values;
+    if (rows.length > 0) {
+        const tableBody = document.getElementById('hReceptorTableBody');
+        tableBody.innerHTML = ''; // Limpiar el cuerpo de la tabla antes de agregar nuevos datos.
+        // Saltarse la primera fila si contiene los encabezados de las columnas.
+        rows.slice(1).forEach((row) => {
+            // Crea una fila de tabla por cada registro.
+            let tr = `<tr>
+                        <td>${row[0]}</td>
+                        <td>${row[1]}</td>
+                        <td>${row[3]}</td>
+                        
+                       
+                        <td class="text-center">
+                          <button class="btn btn-dark">Modificar</button>
+                          <button class="btn btn-danger">Eliminar</button>
+                        </td>
+                      </tr>`;
+            tableBody.innerHTML += tr;
+        });
+        document.getElementById("H.ReceptorSection").style.display = "none"; 
+    } else {
+        document.getElementById('H.ReceptorSection').innerHTML = '<p>No se encontraron datos.</p>';
+    }
+}
 
 // Función para enviar datos a la hoja de Google Sheets
 function sendDataToSheet(sheetName, data) {

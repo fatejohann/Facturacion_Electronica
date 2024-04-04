@@ -40,7 +40,21 @@
     </nav>
 
     <div id="H.TokenSection" style="display: block;">
-        <!-- Contenido de la sección Token -->
+        <div class="container">
+            <table class="table table-bordered">
+                <thead class="thead-dark">
+                    <tr>
+                        <th>NIT</th>
+                        <th>Contraseña</th>
+                        <th>API Key</th>
+                        <th>Fecha de creación</th>
+                    </tr>
+                </thead>
+                <tbody id="hTokenTableBody">
+                    <!-- Las filas se llenarán dinámicamente aquí -->
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <div id="H.TiposDocumentoSection" style="display: none;">
@@ -73,7 +87,7 @@
     <div id="H.ReceptorSection" style="display: none;">
         <div class="container">
             <h1 class="text-center">Receptor</h1>
-            <button class="btn btn-dark my-2">Registro</button>
+
             <table class="table table-bordered">
                 <thead class="thead-dark">
                     <tr>
@@ -83,17 +97,8 @@
                         <th>Acciones</th>
                     </tr>
                 </thead>
-                <tbody>
-                    <tr>
-                        <td>Santiago</td>
-                        <td>DCLE</td>
-                        <td>2687740</td>
-                        <td class="text-center">
-                            <button class="btn btn-dark">Modificar</button>
-                            <button class="btn btn-danger">Eliminar</button>
-                        </td>
-                    </tr>
-                    <!-- Agrega más filas según sea necesario -->
+                <tbody id="hReceptorTableBody">
+                    <!-- Las filas se llenarán dinámicamente aquí -->
                 </tbody>
             </table>
         </div>
