@@ -189,11 +189,11 @@ document.getElementById('tokenForm').addEventListener('submit', function(event) 
     // Obtener los valores de los campos del formulario
     const nit = document.getElementById('nit').value;
     const password = document.getElementById('password').value;
-    const apiKey = document.getElementById('apiKey').value;
+    const BearerToken = document.getElementById('BearerToken').value;
     const fechaCreacion = getCreationDate(); // Obtener la fecha de creación
 
     // Crear un arreglo con los datos del formulario, incluyendo la fecha de creación
-    const data = [nit, password, apiKey, fechaCreacion];
+    const data = [nit, password, BearerToken, fechaCreacion];
 
     // Llamar a la función para enviar los datos a la hoja de Google Sheets
     sendDataToSheet('h.token', data);
@@ -232,3 +232,89 @@ document.getElementById('receptorForm').addEventListener('submit', function(even
     event.preventDefault(); // Prevenir el envío del formulario por defecto
     createReceptor();
 });
+
+// Arreglo para almacenar los detalles ingresados
+let detallesIngresados = [];
+
+// Función para agregar un detalle a la tabla de detalles ingresados
+async function agregarDetalle() {
+    // Obtener los valores del formulario
+    const cantidad = document.getElementById('cantidad').value;
+    const descripcion = document.getElementById('descripcion').value;
+    const precio = document.getElementById('precio').value;
+    const ventasNoSujetas = document.getElementById('ventasNoSujetas').value;
+    const ventasExentas = document.getElementById('ventasExentas').value;
+    const ventasAfectas = document.getElementById('ventasAfectas').value;
+
+    // Validar que se ingresen todos los campos
+    if (cantidad && descripcion && precio && ventasNoSujetas && ventasExentas && ventasAfectas) {
+        // Crear objeto con los detalles del formulario
+        const detalle = {
+            cantidad,
+            descripcion,
+            precio,
+            ventasNoSujetas,
+            ventasExentas,
+            ventasAfectas
+        };
+
+        // Agregar el detalle al arreglo de detalles ingresados
+        detallesIngresados.push(detalle);
+
+        // Limpiar los campos del formulario
+        document.getElementById('cantidad').value = '';
+        document.getElementById('descripcion').value = '';
+        document.getElementById('precio').value = '';
+        document.getElementById('ventasNoSujetas').value = '';
+        document.getElementById('ventasExentas').value = '';
+        document.getElementById('ventasAfectas').value = '';
+
+        // Mostrar los detalles ingresados en la tabla
+        mostrarDetallesIngresados();
+
+        // Enviar los datos a Google Sheets
+        await enviarDetalleAGoogleSheets(detalle);
+    } else {
+        alert('Por favor complete todos los campos.');
+    }
+}
+// Función para mostrar los detalles ingresados en la tabla
+function mostrarDetallesIngresados() {
+    const detallesBody = document.getElementById('detallesIngresadosBody');
+    detallesBody.innerHTML = ''; // Limpiar el cuerpo de la tabla antes de agregar nuevos detalles
+
+    detallesIngresados.forEach(detalle => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td>${detalle.cantidad}</td>
+            <td>${detalle.descripcion}</td>
+            <td>${detalle.precio}</td>
+            <td>${detalle.ventasNoSujetas}</td>
+            <td>${detalle.ventasExentas}</td>
+            <td>${detalle.ventasAfectas}</td>
+        `;
+        detallesBody.appendChild(row);
+    });
+}
+
+
+// Función para enviar el detalle a Google Sheets
+async function enviarDetalleAGoogleSheets(detalle) {
+    const values = [
+        [detalle.cantidad, detalle.descripcion, detalle.precio, detalle.ventasNoSujetas, detalle.ventasExentas, detalle.ventasAfectas]
+    ];
+
+    try {
+        const response = await gapi.client.sheets.spreadsheets.values.append({
+            spreadsheetId: '1J__Pzj8RNIrwlojeF-mjBdWYtt9GH3QH3Je5SamLfSI',
+            range: 'h.detalles!A:G', // Ajusta el rango según tu necesidad
+            valueInputOption: 'USER_ENTERED',
+            resource: {
+                values: values
+            }
+        });
+        console.log('Detalle enviado a Google Sheets:', response);
+    } catch (err) {
+        console.error('Error al enviar detalle a Google Sheets:', err);
+    }
+}
