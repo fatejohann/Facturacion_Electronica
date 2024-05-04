@@ -78,7 +78,7 @@
                         <h5 class="card-title">Autenticación de Token</h5>
                     </div>
                     <div class="card-body">
-                        <form id="tokenForm"> <!-- Agregamos un ID al formulario -->
+                        <form id="tokenForm">
                             <div class="form-group row">
                                 <label for="nit" class="col-sm-3 col-form-label">NIT:</label>
                                 <div class="col-sm-9">
@@ -91,12 +91,7 @@
                                     <input type="password" class="form-control" id="password" name="password">
                                 </div>
                             </div>
-                            <div class="form-group row">
-                                <label for="apiKey" class="col-sm-3 col-form-label">Bearer Token:</label>
-                                <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="BearerToken" name="apiKey">
-                                </div>
-                            </div>
+
                             <div class="form-group row">
                                 <div class="col-sm-9 offset-sm-3">
                                     <button type="submit" class="btn btn-primary">Enviar</button>
@@ -108,7 +103,10 @@
             </div>
         </div>
     </div>
-    
+    <div>
+        <h2>Token:</h2>
+        <p id="tokenDisplay"></p>
+      </div>
 
 
         <div class="section" id="TiposdeDocumentoSection" style="display: none;">

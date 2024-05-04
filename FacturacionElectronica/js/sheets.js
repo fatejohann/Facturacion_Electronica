@@ -2,6 +2,110 @@ let emisor;
 let receptor;
 let token;
 
+// Función para enviar datos a la hoja de Google Sheets
+function sendDataToSheet(sheetName, data) {
+    const sheets = gapi.client.sheets.spreadsheets.values;
+    const spreadsheetId = '1J__Pzj8RNIrwlojeF-mjBdWYtt9GH3QH3Je5SamLfSI';
+    const range = `${sheetName}!A:Z`;
+  
+    sheets.append({
+      spreadsheetId: spreadsheetId,
+      range: range,
+      valueInputOption: 'RAW',
+      values: [data] // Se envía como un array de datos
+    }).then(function (response) {
+      alert(`Los datos se han enviado correctamente a la hoja "${sheetName}"`);
+    }, function (error) {
+      console.error("Error al enviar datos a la hoja: ", error);
+    });
+}
+
+// Función para manejar el envío del formulario de Token
+document.getElementById('tokenForm').addEventListener('submit', function(event) {
+    event.preventDefault(); // Prevenir el envío del formulario por defecto
+
+    // Obtener los valores de los campos del formulario
+    const nit = document.getElementById('nit').value;
+    const password = document.getElementById('password').value;
+
+    // Realizar la solicitud a la API
+    const url = 'https://apitest.dtes.mh.gob.sv/seguridad/auth'; // URL de la API
+    const data = new URLSearchParams();
+    data.append('user', nit);
+    data.append('pwd', password);
+
+    fetch(url, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded'
+      },
+      body: data
+    })
+    .then(response => {
+      if (!response.ok) {
+        throw new Error('Network response was not ok');
+      }
+      return response.json(); // Convertir la respuesta en JSON
+    })
+    .then(jsonResponse => {
+      // Aquí puedes manejar la respuesta JSON como desees
+      console.log(jsonResponse);
+      const token = jsonResponse.body.token.toString(); // Convertir el token en una cadena de texto
+
+      // Obtener la fecha de creación
+      const fechaCreacion = new Date().toISOString();
+
+      // Crear un arreglo con los datos a enviar a la hoja de Google Sheets
+      const dataToSend = [ fechaCreacion,token];
+
+      // Llamar a la función para enviar los datos a la hoja de Google Sheets
+      sendDataToSheet('h.token', dataToSend);
+
+      // Mostrar el token en la página
+      document.getElementById('tokenDisplay').innerText = token;
+    })
+    .catch(error => {
+      // Aquí manejas los errores
+      console.error('There was a problem with the fetch operation:', error);
+      alert('Hubo un problema con la autenticación.');
+    });
+});
+
+//historial de token
+async function getToken() {
+    let response;
+    try {
+        response = await gapi.client.sheets.spreadsheets.values.get({
+            spreadsheetId: '1J__Pzj8RNIrwlojeF-mjBdWYtt9GH3QH3Je5SamLfSI',
+            range: 'h.token!A:D', // Asegúrate de que este rango cubra todas las columnas necesarias.
+        });
+    } catch (err) {
+        console.error('The API returned an error: ' + err);
+        return;
+    }
+
+    const rows = response.result.values;
+    if (rows.length > 0) {
+        const tableBody = document.getElementById('hTokenTableBody');
+        tableBody.innerHTML = ''; // Limpiar el cuerpo de la tabla antes de agregar nuevos datos.
+        // Saltarse la primera fila si contiene los encabezados de las columnas.
+        rows.slice(1).forEach((row) => {
+            // Crea una fila de tabla por cada registro.
+            let tr = `<tr>
+                        <td>${row[0]}</td>
+                        <td>${row[1]}</td>
+                        
+                      </tr>`;
+            tableBody.innerHTML += tr;
+        });
+        document.getElementById("H.TokenSection").style.display = "block"; // Mostrar la sección.
+    } else {
+        document.getElementById('H.TokenSection').innerHTML = '<p>No se encontraron datos.</p>';
+    }
+}
+
+
+//historial de emisor
 async function getEmisor(){
     let response;
     try {
@@ -43,43 +147,7 @@ async function getEmisor(){
     }
 }
 
-
-async function getToken() {
-    let response;
-    try {
-        response = await gapi.client.sheets.spreadsheets.values.get({
-            spreadsheetId: '1J__Pzj8RNIrwlojeF-mjBdWYtt9GH3QH3Je5SamLfSI',
-            range: 'h.token!A:D', // Asegúrate de que este rango cubra todas las columnas necesarias.
-        });
-    } catch (err) {
-        console.error('The API returned an error: ' + err);
-        return;
-    }
-
-    const rows = response.result.values;
-    if (rows.length > 0) {
-        const tableBody = document.getElementById('hTokenTableBody');
-        tableBody.innerHTML = ''; // Limpiar el cuerpo de la tabla antes de agregar nuevos datos.
-        // Saltarse la primera fila si contiene los encabezados de las columnas.
-        rows.slice(1).forEach((row) => {
-            // Crea una fila de tabla por cada registro.
-            let tr = `<tr>
-                        <td>${row[0]}</td>
-                        <td>${row[1]}</td>
-                        <td>${row[2]}</td>
-                        <td>${row[3]}</td>
-                    </tr>`;
-            tableBody.innerHTML += tr;
-        });
-        document.getElementById("H.TokenSection").style.display = "block"; // Mostrar la sección.
-    } else {
-        document.getElementById('H.TokenSection').innerHTML = '<p>No se encontraron datos.</p>';
-    }
-}
-
-// Llama a la función para obtener y mostrar los datos del token.
-
-
+//historial de receptor
 async function getReceptor(){
     let response;
     try {
@@ -116,24 +184,6 @@ async function getReceptor(){
     } else {
         document.getElementById('H.ReceptorSection').innerHTML = '<p>No se encontraron datos.</p>';
     }
-}
-
-// Función para enviar datos a la hoja de Google Sheets
-function sendDataToSheet(sheetName, data) {
-    const sheets = gapi.client.sheets.spreadsheets.values;
-    const spreadsheetId = '1J__Pzj8RNIrwlojeF-mjBdWYtt9GH3QH3Je5SamLfSI';
-    const range = `${sheetName}!A:Z`;
-
-    sheets.append({
-        spreadsheetId: spreadsheetId,
-        range: range,
-        valueInputOption: 'RAW',
-        values: [data]
-    }).then(function (response) {
-        alert(`Los datos se han enviado correctamente a la hoja "${sheetName}"`);
-    }, function (error) {
-        console.error("Error al enviar datos a la hoja: ", error);
-    });
 }
 
 //envio de emisor
@@ -175,29 +225,7 @@ document.getElementById('emisorForm').addEventListener('submit', function(event)
 });
 
 
-//envio de token
-//Evento submit del formulario
-// Función para obtener la fecha de creación
-function getCreationDate() {
-    return new Date().toISOString();
-}
 
-// Función para manejar el envío del formulario de Token
-document.getElementById('tokenForm').addEventListener('submit', function(event) {
-    event.preventDefault(); // Prevenir el envío del formulario por defecto
-
-    // Obtener los valores de los campos del formulario
-    const nit = document.getElementById('nit').value;
-    const password = document.getElementById('password').value;
-    const BearerToken = document.getElementById('BearerToken').value;
-    const fechaCreacion = getCreationDate(); // Obtener la fecha de creación
-
-    // Crear un arreglo con los datos del formulario, incluyendo la fecha de creación
-    const data = [nit, password, BearerToken, fechaCreacion];
-
-    // Llamar a la función para enviar los datos a la hoja de Google Sheets
-    sendDataToSheet('h.token', data);
-});
 
 //envio de receptor
 // Función para recopilar los datos del formulario del Receptor

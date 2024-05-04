@@ -1,317 +1,62 @@
 <!DOCTYPE html>
-<html lang="en">
-
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Facturación Electrónica</title>
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Prueba de API de autenticación</title>
 </head>
-
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <a class="navbar-brand" href="#">Facturación Electrónica</a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
-            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item">
-                    <button class="btn btn-link nav-link" onclick="showToken()">H.Token</button>
-                </li>
-                <li class="nav-item">
-                    <button class="btn btn-link nav-link" onclick="showTiposdeDocumento()">H.Tipos de Documento</button>
-                </li>
-                <li class="nav-item">
-                    <button class="btn btn-link nav-link" onclick="showEmisor()">H.Emisor</button>
-                </li>
-                <li class="nav-item">
-                    <button class="btn btn-link nav-link" onclick="showReceptor()">H.Receptor</button>
-                </li>
-            </ul>
-            <div class="navbar-nav">
-                <a href="inicio.html" class="nav-item nav-link btn btn-info text-white">Inicio</a>
-            </div>
-        </div>
-    </nav>
+  <h1>Prueba de API de autenticación</h1>
+  <form id="authForm">
+    <label for="nit">NIT:</label>
+    <input type="text" id="nit" name="nit" required><br><br>
+    <label for="password">Contraseña:</label>
+    <input type="password" id="password" name="password" required><br><br>
+    <button type="submit">Enviar</button>
+  </form>
 
-    <div id="hTokenSection" style="display: none;">
-        <!-- Contenido de la sección Token -->
-    </div>
+  <script>
+    document.getElementById('authForm').addEventListener('submit', function(event) {
+      event.preventDefault(); // Evitar que se envíe el formulario de forma tradicional
+      
+      const nit = document.getElementById('nit').value;
+      const password = document.getElementById('password').value;
+      const url = 'https://apitest.dtes.mh.gob.sv/seguridad/auth';
 
-    <div id="hTiposDocumentoSection" style="display: none;">
-        <div class="container text-center mt-5">
-            <h1 class="mb-4">Historial de Documentos</h1>
-            <div class="table-responsive">
-                <table class="table table-bordered">
-                    <thead class="thead-dark">
-                        <tr>
-                            <th scope="col">Fecha de emitido</th>
-                            <th scope="col">Código de Generación</th>
-                            <th scope="col">Sello de Recibido</th>
-                            <th scope="col">Operaciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>2024-02-21</td>
-                            <td>0DB977B1-BD4F-4320-B6C2-188849287E6B</td>
-                            <td>20242AE935AF3EDC48C28FE67566E9FAFB607AJVM</td>
-                            <td><button class="btn btn-dark">Obtener PDF</button></td>
-                        </tr>
-                        <!-- Agrega más filas según sea necesario -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
+      const data = new URLSearchParams();
+      data.append('user', nit); // Cambio del nombre del campo de NIT
+      data.append('pwd', password); // Cambio del nombre del campo de contraseña
 
-    <div id="hReceptorSection" style="display: none;">
-        <div class="container">
-            <h1 class="text-center">Receptor</h1>
-            <button class="btn btn-dark my-2">Registro</button>
-            <table class="table table-bordered">
-                <thead class="thead-dark">
-                    <tr>
-                        <th>Nombre</th>
-                        <th>Tipo documento</th>
-                        <th>NRC</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td>Santiago</td>
-                        <td>DCLE</td>
-                        <td>2687740</td>
-                        <td class="text-center">
-                            <button class="btn btn-dark">Modificar</button>
-                            <button class="btn btn-danger">Eliminar</button>
-                        </td>
-                    </tr>
-                    <!-- Agrega más filas según sea necesario -->
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <div id="hEmisorSection" style="display: none;">
-        <div class="container">
-            <table class="table table-bordered">
-                <thead class="thead-dark">
-                    <tr>
-                        <th>Nombre</th>
-                        <th>Nombre Comercial</th>
-                        <th>Actividad</th>
-                        <th>NCR</th>
-                        <th>NIT</th>
-                        <th>Departamento</th>
-                        <th>Municipio</th>
-                        <th>Correo</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody id="hEmisorTableBody">
-                    <!-- Las filas se llenarán dinámicamente aquí -->
-                </tbody>
-            </table>
-        </div>
-    </div>
-
-    <!-- Autenticación -->
-    <button id="authorize_button" onclick="handleAuthClick()">Authorize</button>
-    <button id="signout_button" onclick="handleSignoutClick()">Sign Out</button>
-
-    <script async defer src="https://apis.google.com/js/api.js" id="gapi"></script>
-    <script async defer src="https://accounts.google.com/gsi/client" id="gis"></script>
-</body>
-
-<script>
-//API="AIzaSyAIPDRfAJcv_cXME1ltyTgmi0WLwFLuXqY"
-//IDCliente="135925497494-bbnq1fkal8i9qivu7u7ncjrl2eki7hnj.apps.googleusercontent.com"
-
-/* exported gapiLoaded */
-/* exported gisLoaded */
-/* exported handleAuthClick */
-/* exported handleSignoutClick */
-
-// TODO(developer): Set to client ID and API key from the Developer Console
-const CLIENT_ID = '135925497494-bbnq1fkal8i9qivu7u7ncjrl2eki7hnj.apps.googleusercontent.com';
-const API_KEY = 'AIzaSyAIPDRfAJcv_cXME1ltyTgmi0WLwFLuXqY';
-
-// Discovery doc URL for APIs used by the quickstart
-const DISCOVERY_DOC = 'https://sheets.googleapis.com/$discovery/rest?version=v4';
-
-// Authorization scopes required by the API; multiple scopes can be
-// included, separated by spaces.
-const SCOPES = 'https://www.googleapis.com/auth/spreadsheets.readonly';
-
-let tokenClient;
-let gapiInited = false;
-let gisInited = false;
-
-document.getElementById("gapi").addEventListener("load", gapiLoaded);
-document.getElementById("gis").addEventListener("load", gisLoaded);
-
-document.getElementById('authorize_button').style.visibility = 'hidden';
-document.getElementById('signout_button').style.visibility = 'hidden';
-
-/**
- * Callback after api.js is loaded.
- */
-function gapiLoaded() {
-    gapi.load('client', initializeGapiClient);
-}
-
-/**
- * Callback after the API client is loaded. Loads the
- * discovery doc to initialize the API.
- */
-async function initializeGapiClient() {
-    await gapi.client.init({
-        apiKey: API_KEY,
-        discoveryDocs: [DISCOVERY_DOC],
-    });
-    gapiInited = true;
-    maybeEnableButtons();
-}
-
-/**
- * Callback after Google Identity Services are loaded.
- */
-function gisLoaded() {
-    tokenClient = google.accounts.oauth2.initTokenClient({
-        client_id: CLIENT_ID,
-        scope: SCOPES,
-        callback: '', // defined later
-    });
-    gisInited = true;
-    maybeEnableButtons();
-}
-
-/**
- * Enables user interaction after all libraries are loaded.
- */
-function maybeEnableButtons() {
-    if (gapiInited && gisInited) {
-        document.getElementById('authorize_button').style.visibility = 'visible';
-    }
-}
-
-/**
- *  Sign in the user upon button click.
- */
-function handleAuthClick() {
-    tokenClient.callback = async (resp) => {
-        if (resp.error !== undefined) {
-            throw (resp);
+      fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: data
+      })
+      .then(response => {
+        if (!response.ok) {
+          throw new Error('Network response was not ok');
         }
-        document.getElementById('signout_button').style.visibility = 'visible';
-        document.getElementById('authorize_button').innerText = 'Refresh';
-        await listEmisores(); // Llamar a la función para obtener los datos
-    };
+        return response.json(); // Esto convierte la respuesta en JSON
+      })
+      .then(jsonResponse => {
+        // Aquí puedes manejar la respuesta JSON como desees
+        console.log(jsonResponse);
+        const token = jsonResponse.body.token;
+        document.getElementById('tokenDisplay').innerText = token;
+      })
+      .catch(error => {
+        // Aquí manejas los errores
+        console.error('There was a problem with the fetch operation:', error);
+        alert('Hubo un problema con la autenticación.');
+      });
+    });
+  </script>
 
-    if (gapi.client.getToken() === null) {
-        // Prompt the user to select a Google Account and ask for consent to share their data
-        // when establishing a new session.
-        tokenClient.requestAccessToken({prompt: 'consent'});
-    } else {
-        // Skip display of account chooser and consent dialog for an existing session.
-        tokenClient.requestAccessToken({prompt: ''});
-    }
-}
-
-/**
- *  Sign out the user upon button click.
- */
-function handleSignoutClick() {
-    const token = gapi.client.getToken();
-    if (token !== null) {
-        google.accounts.oauth2.revoke(token.access_token);
-        gapi.client.setToken('');
-        document.getElementById('content').innerText = '';
-        document.getElementById('authorize_button').innerText = 'Authorize';
-        document.getElementById('signout_button').style.visibility = 'hidden';
-    }
-}
-
-/**
- * Print the names and majors of students in a sample spreadsheet:
- * https://docs.google.com/spreadsheets/d/1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms/edit
- */
-async function listEmisores() {
-    let response;
-    try {
-        response = await gapi.client.sheets.spreadsheets.values.get({
-            spreadsheetId: '1J__Pzj8RNIrwlojeF-mjBdWYtt9GH3QH3Je5SamLfSI',
-            range: 'h.emisor!A:H', // Asegúrate de que este rango cubra todas las columnas necesarias.
-        });
-    } catch (err) {
-        console.error('The API returned an error: ' + err);
-        return;
-    }
-
-    const rows = response.result.values;
-    if (rows.length > 0) {
-        const tableBody = document.getElementById('hEmisorTableBody');
-        tableBody.innerHTML = ''; // Limpiar el cuerpo de la tabla antes de agregar nuevos datos.
-        // Saltarse la primera fila si contiene los encabezados de las columnas.
-        rows.slice(1).forEach((row) => {
-            // Crea una fila de tabla por cada registro.
-            let tr = `<tr>
-                        <td>${row[0]}</td>
-                        <td>${row[1]}</td>
-                        <td>${row[2]}</td>
-                        <td>${row[3]}</td>
-                        <td>${row[4]}</td>
-                        <td>${row[5]}</td>
-                        <td>${row[6]}</td>
-                        <td>${row[7]}</td>
-                        <td class="text-center">
-                          <button class="btn btn-dark">Modificar</button>
-                          <button class="btn btn-danger">Eliminar</button>
-                        </td>
-                      </tr>`;
-            tableBody.innerHTML += tr;
-        });
-        document.getElementById("hEmisorSection").style.display = "block"; // Mostrar la sección.
-    } else {
-        document.getElementById('hEmisorSection').innerHTML = '<p>No se encontraron datos.</p>';
-    }
-}
-
-// Función para ocultar todas las secciones
-function hideAllSections() {
-    document.getElementById("hEmisorSection").style.display = "none";
-    document.getElementById("hReceptorSection").style.display = "none";
-    document.getElementById("hTiposDocumentoSection").style.display = "none";
-    document.getElementById("hTokenSection").style.display = "none";
-}
-
-// Funciones para mostrar cada sección específica
-function showTiposdeDocumento() {
-    hideAllSections();
-    document.getElementById("hTiposDocumentoSection").style.display = "block";
-}
-
-function showToken() {
-    hideAllSections();
-    document.getElementById("hTokenSection").style.display = "block";
-}
-
-function showEmisor() {
-    hideAllSections();
-    document.getElementById("hEmisorSection").style.display = "block";
-}
-
-function showReceptor() {
-    hideAllSections();
-    document.getElementById("hReceptorSection").style.display = "block";
-}
-</script>
-
+  <div>
+    <h2>Token:</h2>
+    <p id="tokenDisplay"></p>
+  </div>
+</body>
 </html>
