@@ -110,9 +110,6 @@ function handleSignoutClick() {
   }
 }
 
-
-
-
 //inicio
 function showEmisor() {
   hideAllSections();

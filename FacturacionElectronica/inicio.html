@@ -53,7 +53,6 @@
         </div>
     </nav>
 
-
     <div class="container mt-5"> <!-- Aumenta el margen superior para mayor separación -->
         <div class="row">
             <div class="col">
@@ -85,6 +84,7 @@
                                     <input type="text" class="form-control" id="nit" name="nit">
                                 </div>
                             </div>
+
                             <div class="form-group row">
                                 <label for="password" class="col-sm-3 col-form-label">Contraseña:</label>
                                 <div class="col-sm-9">
@@ -107,7 +107,6 @@
         <h2>Token:</h2>
         <p id="tokenDisplay"></p>
       </div>
-
 
         <div class="section" id="TiposdeDocumentoSection" style="display: none;">
             <div class="container">
@@ -389,8 +388,10 @@
                     </div>
                 </div>
             </div>
-        </div>        
+        </div>   
         
+        //agregar un boton que me permita realizar las dos acciones de la creacion del dte y el envio del dte
+        // y luego en los historiales de tipo de dte trabajar el boton de obtener pdf
         <button id="authorize_button" onclick="handleAuthClick()">Authorize</button>
         <button id="signout_button" onclick="handleSignoutClick()">Sign Out</button>
     
