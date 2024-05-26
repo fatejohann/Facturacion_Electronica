@@ -1,62 +1,258 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Prueba de API de autenticación</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Factura Electrónica</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
 </head>
 <body>
-  <h1>Prueba de API de autenticación</h1>
-  <form id="authForm">
-    <label for="nit">NIT:</label>
-    <input type="text" id="nit" name="nit" required><br><br>
-    <label for="password">Contraseña:</label>
-    <input type="password" id="password" name="password" required><br><br>
-    <button type="submit">Enviar</button>
-  </form>
+    <div class="section" id="TiposdeDocumentoSection">
+        <div class="container">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Tipos de Documento</h5>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="documentType">Seleccione un tipo de documento:</label>
+                        <select class="form-control" id="documentType">
+                            <option value="FE">Factura Electrónica</option>
+                            <!-- otros tipos de documentos -->
+                        </select>
+                        <div class="form-group row">
+                            <div class="col-sm-9 offset-sm-3">
+                                <button type="button" class="btn btn-primary" id="submitDocumentButton">Enviar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-  <script>
-    document.getElementById('authForm').addEventListener('submit', function(event) {
-      event.preventDefault(); // Evitar que se envíe el formulario de forma tradicional
-      
-      const nit = document.getElementById('nit').value;
-      const password = document.getElementById('password').value;
-      const url = 'https://apitest.dtes.mh.gob.sv/seguridad/auth';
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById("submitDocumentButton").addEventListener("click", function() {
+                const documentoSeleccionado = document.getElementById('documentType').value;
+                let facturaJson = cargarFactura(documentoSeleccionado);
+                enviarFactura(facturaJson);
+            });
+        });
 
-      const data = new URLSearchParams();
-      data.append('user', nit); // Cambio del nombre del campo de NIT
-      data.append('pwd', password); // Cambio del nombre del campo de contraseña
-
-      fetch(url, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: data
-      })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Network response was not ok');
+        function cargarFactura(tipoDocumento) {
+            if (tipoDocumento === 'FE') {
+                return {
+                    "nit": "06142803901121",
+                    "activo": true,
+                    "passwordPri": "Rr2Ll3rm0@$ñ@",
+                    "dteJson": {
+                        "identificacion": {
+                            "version": 1,
+                            "ambiente": "00",
+                            "tipoDte": "01",
+                            "numeroControl": "DTE-01-0001ONEC-000000000005002",
+                            "codigoGeneracion": "B1B99C52-B821-4BF0-8B5C-C010AF6E1CCD",
+                            "tipoModelo": 1,
+                            "tipoOperacion": 1,
+                            "tipoContingencia": null,
+                            "motivoContin": null,
+                            "fecEmi": "2024-03-21",
+                            "horEmi": "19:30:00",
+                            "tipoMoneda": "USD"
+                        },
+                        "documentoRelacionado": null,
+                        "emisor": {
+                            "nit": "06142803901121",
+                            "nrc": "2398810",
+                            "nombre": "JUAN MANUEL REYES",
+                            "codActividad": "73100",
+                            "descActividad": "Publicidad",
+                            "nombreComercial": null,
+                            "tipoEstablecimiento": "01",
+                            "direccion": {
+                                "departamento": "06",
+                                "municipio": "14",
+                                "complemento": "San Salvador"
+                            },
+                            "telefono": "2281-8000",
+                            "codEstableMH": "0000",
+                            "codEstable": "0000",
+                            "codPuntoVentaMH": "0000",
+                            "codPuntoVenta": "0000",
+                            "correo": "mentesbrillantesagencia@gmail.com"
+                        },
+                        "receptor": {
+                            "tipoDocumento": "36",
+                            "numDocumento": "06142803901121",
+                            "nrc": null,
+                            "nombre": "Luis Del Cid",
+                            "codActividad": null,
+                            "descActividad": null,
+                            "direccion": {
+                                "departamento": "06",
+                                "municipio": "14",
+                                "complemento": "SAN SALVADOR"
+                            },
+                            "telefono": "78291734",
+                            "correo": "gj23726116@gmail.com"
+                        },
+                        "otrosDocumentos": null,
+                        "ventaTercero": null,
+                        "cuerpoDocumento": [
+                            {
+                                "numItem": 1,
+                                "tipoItem": 2,
+                                "numeroDocumento": null,
+                                "cantidad": 1,
+                                "codigo": null,
+                                "codTributo": null,
+                                "uniMedida": 99,
+                                "descripcion": "EMISIÓN DE CERTIFICADOS DE FIRMA ELECTRÓNICA 1",
+                                "precioUni": 100,
+                                "montoDescu": 0,
+                                "ventaNoSuj": 0,
+                                "ventaExenta": 0,
+                                "ventaGravada": 100,
+                                "tributos": null,
+                                "psv": 0,
+                                "noGravado": 5,
+                                "ivaItem": 11.50
+                            },
+                            {
+                                "numItem": 2,
+                                "tipoItem": 2,
+                                "numeroDocumento": null,
+                                "cantidad": 1,
+                                "codigo": null,
+                                "codTributo": null,
+                                "uniMedida": 99,
+                                "descripcion": "EMISIÓN DE CERTIFICADOS DE FIRMA ELECTRÓNICA 2",
+                                "precioUni": 25,
+                                "montoDescu": 25,
+                                "ventaNoSuj": 0,
+                                "ventaExenta": 0,
+                                "ventaGravada": 0,
+                                "tributos": null,
+                                "psv": 0,
+                                "noGravado": 0,
+                                "ivaItem": 0
+                            }
+                        ],
+                        "resumen": {
+                            "totalNoSuj": 0,
+                            "totalExenta": 0,
+                            "totalGravada": 100,
+                            "subTotalVentas": 100,
+                            "descuNoSuj": 0,
+                            "descuExenta": 0,
+                            "descuGravada": 0,
+                            "porcentajeDescuento": 0,
+                            "totalDescu": 25,
+                            "tributos": null,
+                            "subTotal": 100,
+                            "ivaRete1": 0,
+                            "reteRenta": 0,
+                            "montoTotalOperacion": 100,
+                            "totalNoGravado": 5,
+                            "totalPagar": 105,
+                            "totalLetras": "pendiente",
+                            "totalIva": 11.50,
+                            "saldoFavor": -500,
+                            "condicionOperacion": 1,
+                            "pagos": [
+                                {
+                                    "codigo": "01",
+                                    "montoPago": 50,
+                                    "referencia": null,
+                                    "plazo": null,
+                                    "periodo": null
+                                },
+                                {
+                                    "codigo": "03",
+                                    "montoPago": 25,
+                                    "referencia": null,
+                                    "plazo": null,
+                                    "periodo": null
+                                },
+                                {
+                                    "codigo": "99",
+                                    "montoPago": 25,
+                                    "referencia": null,
+                                    "plazo": null,
+                                    "periodo": null
+                                }
+                            ],
+                            "numPagoElectronico": null
+                        },
+                        "extension": {
+                            "nombEntrega": null,
+                            "docuEntrega": null,
+                            "nombRecibe": null,
+                            "docuRecibe": null,
+                            "observaciones": null,
+                            "placaVehiculo": null
+                        },
+                        "apendice": null
+                    }
+                };
+            }
+            return {};
         }
-        return response.json(); // Esto convierte la respuesta en JSON
-      })
-      .then(jsonResponse => {
-        // Aquí puedes manejar la respuesta JSON como desees
-        console.log(jsonResponse);
-        const token = jsonResponse.body.token;
-        document.getElementById('tokenDisplay').innerText = token;
-      })
-      .catch(error => {
-        // Aquí manejas los errores
-        console.error('There was a problem with the fetch operation:', error);
-        alert('Hubo un problema con la autenticación.');
-      });
-    });
-  </script>
 
-  <div>
-    <h2>Token:</h2>
-    <p id="tokenDisplay"></p>
-  </div>
+        async function enviarFactura(facturaJson) {
+            try {
+                const responseFirmar = await fetch('https://localhost:8113/firmardocumento/', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Accept': '*/*',
+                        'Connection': 'keep-alive',
+                        'Accept-Encoding': 'gzip, deflate, br',
+                        'User-Agent': 'PostmanRuntime/7.39.0'
+                    },
+                    body: JSON.stringify(facturaJson)
+                });
+
+                if (!responseFirmar.ok) {
+                    throw new Error('Error en la respuesta de firmardocumento');
+                }
+
+                const dataFirmar = await responseFirmar.json();
+                console.log('Respuesta de firmardocumento:', dataFirmar);
+
+                const documentoFirmado = dataFirmar.body;
+
+                const dte = {
+                    ambiente: "00",
+                    idEnvio: 1,
+                    version: facturaJson.dteJson.identificacion.version,
+                    tipoDte: facturaJson.dteJson.identificacion.tipoDte,
+                    documento: documentoFirmado
+                };
+
+                const responseRecepcion = await fetch('https://apitest.dtes.mh.gob.sv/fesv/recepciondte', {
+            method: 'POST',
+            mode: "no-cors",
+            credentials: "include",
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(dte)
+        });
+
+                if (!responseRecepcion.ok) {
+                    throw new Error('Error en la respuesta de recepciondte');
+                }
+
+                const dataRecepcion = await responseRecepcion.json();
+                console.log('Respuesta de recepciondte:', dataRecepcion);
+                alert('Factura enviada con éxito');
+            } catch (error) {
+                console.error('Error al enviar la factura:', error);
+                alert('Error al enviar la factura');
+            }
+        }
+    </script>
 </body>
 </html>

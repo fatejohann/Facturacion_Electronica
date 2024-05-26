@@ -84,14 +84,14 @@
                                     <input type="text" class="form-control" id="nit" name="nit">
                                 </div>
                             </div>
-
+    
                             <div class="form-group row">
                                 <label for="password" class="col-sm-3 col-form-label">Contraseña:</label>
                                 <div class="col-sm-9">
                                     <input type="password" class="form-control" id="password" name="password">
                                 </div>
                             </div>
-
+    
                             <div class="form-group row">
                                 <div class="col-sm-9 offset-sm-3">
                                     <button type="submit" class="btn btn-primary">Enviar</button>
@@ -103,43 +103,51 @@
             </div>
         </div>
     </div>
-    <div>
-        <h2>Token:</h2>
-        <p id="tokenDisplay"></p>
-      </div>
+    <div class="container mt-5">
+        <div class="section" id="lastTokenSection">
+            <h2>Último Token:</h2>
+            <p id="tokenDisplay"></p>
+            <tbody id="hTokenTableBody">
+                
+            </tbody>
+        </div>
+    </div>
+    
 
-        <div class="section" id="TiposdeDocumentoSection" style="display: none;">
-            <div class="container">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="card-title">Tipos de Documento</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="form-group">
-                            <label for="documentType">Seleccione un tipo de documento:</label>
-                            <select class="form-control" id="documentType">
-                                <option value="1">Factura Electrónica</option>
-                                <option value="2">Comprobante de Crédito Fiscal</option>
-                                <option value="3">Nota de Remisión Electrónica</option>
-                                <option value="4">Nota de Crédito Electrónico</option>
-                                <option value="5">Nota de Débito Electrónico</option>
-                                <option value="6">Comprobante de Retención Electrónico</option>
-                                <option value="7">Comprobante de Liquidación Electrónico</option>
-                                <option value="8">Documento Contable de Liquidación Electrónico</option>
-                                <option value="9">Factura de Exportación Electrónica</option>
-                                <option value="10">Factura de Sujeto Excluido Electrónica</option>
-                                <option value="11">Comprobante de Donación Electrónico</option>
-                            </select>
-                            <div class="form-group row">
-                                <div class="col-sm-9 offset-sm-3">
-                                    <button type="submit" class="btn btn-primary">Enviar</button>
-                                </div>
+      <div class="section" id="TiposdeDocumentoSection">
+        <div class="container">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Tipos de Documento</h5>
+                </div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <label for="documentType">Seleccione un tipo de documento:</label>
+                        <select class="form-control" id="documentType">
+                            <option value="FE">Factura Electrónica</option>
+                            <option value="CCF">Comprobante de Crédito Fiscal</option>
+                            <option value="NRE">Nota de Remisión Electrónica</option>
+                            <option value="NCE">Nota de Crédito Electrónico</option>
+                            <option value="NDE">Nota de Débito Electrónico</option>
+                            <option value="CRE">Comprobante de Retención Electrónico</option>
+                            <option value="CLE">Comprobante de Liquidación Electrónico</option>
+                            <option value="DCLE">Documento Contable de Liquidación Electrónico</option>
+                            <option value="FEE">Factura de Exportación Electrónica</option>
+                            <option value="FSEE">Factura de Sujeto Excluido Electrónica</option>
+                            <option value="CDE">Comprobante de Donación Electrónico</option>
+                        </select>
+                        <div class="form-group row">
+                            <div class="col-sm-9 offset-sm-3">
+                                <button type="button" class="btn btn-primary" id="submitDocumentButton">Enviar documento</button>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
+    
+    
 
 
 
@@ -215,11 +223,7 @@
                                     <input type="email" class="form-control" id="correo" placeholder="Correo">
                                 </div>
                             </div>
-                            <div class="form-group row">
-                                <div class="col-sm-9 offset-sm-3">
-                                    <button type="submit" class="btn btn-primary">Enviar</button>
-                                </div>
-                            </div>
+
                         </form>
                     </div>
                 </div>
@@ -315,11 +319,7 @@
                                     <input type="email" class="form-control" id="correoReceptor" placeholder="Correo">
                                 </div>
                             </div>
-                            <div class="form-group row">
-                                <div class="col-sm-9 offset-sm-3">
-                                    <button type="submit" class="btn btn-primary">Enviar</button>
-                                </div>
-                            </div>
+                            
                         </form>
                     </div>
                 </div>
@@ -397,8 +397,11 @@
     
         <script async defer src="https://apis.google.com/js/api.js" id="gapi"></script>
         <script async defer src="https://accounts.google.com/gsi/client" id="gis"></script>
+        <script src="https://accounts.google.com/gsi/client" async defer></script>
+
         <script src="js/api.js"></script>
         <script src="js/sheets.js"></script>
+        <script src="js/factura.js"></script>
 </body>
 
 </html>

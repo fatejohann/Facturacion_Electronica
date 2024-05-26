@@ -35,41 +35,67 @@ document.getElementById('tokenForm').addEventListener('submit', function(event) 
     data.append('pwd', password);
 
     fetch(url, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded'
-      },
-      body: data
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: data
     })
     .then(response => {
-      if (!response.ok) {
-        throw new Error('Network response was not ok');
-      }
-      return response.json(); // Convertir la respuesta en JSON
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json(); // Convertir la respuesta en JSON
     })
     .then(jsonResponse => {
-      // Aquí puedes manejar la respuesta JSON como desees
-      console.log(jsonResponse);
-      const token = jsonResponse.body.token.toString(); // Convertir el token en una cadena de texto
+        // Aquí puedes manejar la respuesta JSON como desees
+        console.log(jsonResponse);
+        const token = jsonResponse.body.token.toString(); // Convertir el token en una cadena de texto
 
-      // Obtener la fecha de creación
-      const fechaCreacion = new Date().toISOString();
+        // Guardar el token en la variable global
+        lastToken = token;
 
-      // Crear un arreglo con los datos a enviar a la hoja de Google Sheets
-      const dataToSend = [ fechaCreacion,token];
+        // Obtener la fecha de creación
+        const fechaCreacion = new Date().toISOString();
 
-      // Llamar a la función para enviar los datos a la hoja de Google Sheets
-      sendDataToSheet('h.token', dataToSend);
+        // Crear un arreglo con los datos a enviar a la hoja de Google Sheets
+        const dataToSend = [ fechaCreacion, token ];
 
-      // Mostrar el token en la página
-      document.getElementById('tokenDisplay').innerText = token;
+        // Llamar a la función para enviar los datos a la hoja de Google Sheets
+        sendDataToSheet('h.token', dataToSend);
+
+        // Mostrar el token en la página
+        document.getElementById('tokenDisplay').innerText = token;
     })
     .catch(error => {
-      // Aquí manejas los errores
-      console.error('There was a problem with the fetch operation:', error);
-      alert('Hubo un problema con la autenticación.');
+        // Aquí manejas los errores
+        console.error('There was a problem with the fetch operation:', error);
+        alert('Hubo un problema con la autenticación.');
     });
 });
+
+// Función para obtener el último token de Google Sheets
+async function getLastToken() {
+    let response;
+    try {
+        response = await gapi.client.sheets.spreadsheets.values.get({
+            spreadsheetId: '1J__Pzj8RNIrwlojeF-mjBdWYtt9GH3QH3Je5SamLfSI',
+            range: 'h.token!A:D', // Ajusta el rango según sea necesario
+        });
+    } catch (err) {
+        console.error('The API returned an error: ' + err);
+        return;
+    }
+
+    const rows = response.result.values;
+    if (rows.length > 0) {
+        const lastRow = rows[rows.length - 1]; // Obtener la última fila
+        lastToken = lastRow[1]; // Suponiendo que el token está en la segunda columna
+        console.log('Último token obtenido:', lastToken); // Verificar el token obtenido
+    } else {
+        console.error('No se encontró ningún token.');
+    }
+}
 
 //historial de token
 async function getToken() {
@@ -223,8 +249,6 @@ document.getElementById('emisorForm').addEventListener('submit', function(event)
     // Llamar a la función createEmisor para enviar los datos del nuevo emisor
     createEmisor();
 });
-
-
 
 
 //envio de receptor
