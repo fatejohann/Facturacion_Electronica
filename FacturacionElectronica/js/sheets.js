@@ -1,3 +1,4 @@
+let lastToken;
 let emisor;
 let receptor;
 let token;
@@ -76,166 +77,237 @@ document.getElementById('tokenForm').addEventListener('submit', function(event) 
 
 // Función para obtener el último token de Google Sheets
 async function getLastToken() {
-    let response;
     try {
-        response = await gapi.client.sheets.spreadsheets.values.get({
+        const response = await gapi.client.sheets.spreadsheets.values.get({
             spreadsheetId: '1J__Pzj8RNIrwlojeF-mjBdWYtt9GH3QH3Je5SamLfSI',
             range: 'h.token!A:D', // Ajusta el rango según sea necesario
         });
+
+        const rows = response.result.values;
+        if (rows.length > 0) {
+            const lastRow = rows[rows.length - 1]; // Obtener la última fila
+            lastToken = lastRow[1]; // Suponiendo que el token está en la segunda columna
+            const tokenDate = new Date(lastRow[0]); // Suponiendo que la fecha está en la primera columna
+            const currentDate = new Date();
+
+            console.log('Último token obtenido:', lastToken); // Log para mostrar el token obtenido
+
+            // Mostrar el token en la tabla
+            const tableBody = document.getElementById('lastTokenTableBody');
+            if (tableBody) {
+                tableBody.innerHTML = ''; // Limpiar el cuerpo de la tabla antes de agregar nuevos datos
+                const tr = `<tr>
+                              <td>${lastRow[0]}</td>
+                              <td>${lastRow[1]}</td>
+                            </tr>`;
+                tableBody.innerHTML += tr;
+
+                // Calcular la diferencia en horas entre la fecha del token y la fecha actual
+                const timeDifference = currentDate - tokenDate;
+                const hoursDifference = timeDifference / (1000 * 60 * 60);
+
+                // Mostrar un mensaje sobre el estado del token
+                const message = document.createElement('p');
+                if (hoursDifference > 24) {
+                    message.innerText = 'El token ha caducado.';
+                } else {
+                    message.innerText = 'El token está vigente.';
+                }
+                document.getElementById('lastTokenSection').appendChild(message);
+
+                document.getElementById("lastTokenSection").style.display = "block"; // Mostrar la sección
+            } else {
+                console.error('Elemento lastTokenTableBody no encontrado.');
+            }
+        } else {
+            console.error('No se encontró ningún token.');
+        }
     } catch (err) {
         console.error('The API returned an error: ' + err);
-        return;
-    }
-
-    const rows = response.result.values;
-    if (rows.length > 0) {
-        const lastRow = rows[rows.length - 1]; // Obtener la última fila
-        lastToken = lastRow[1]; // Suponiendo que el token está en la segunda columna
-        console.log('Último token obtenido:', lastToken); // Verificar el token obtenido
-    } else {
-        console.error('No se encontró ningún token.');
     }
 }
 
-//historial de token
-async function getToken() {
-    let response;
+async function cargarEmisoresDesdeGoogleSheets() {
     try {
-        response = await gapi.client.sheets.spreadsheets.values.get({
+        const response = await gapi.client.sheets.spreadsheets.values.get({
             spreadsheetId: '1J__Pzj8RNIrwlojeF-mjBdWYtt9GH3QH3Je5SamLfSI',
-            range: 'h.token!A:D', // Asegúrate de que este rango cubra todas las columnas necesarias.
+            range: 'h.emisor!A:Q', // Asegúrate de que este rango cubra todas las columnas necesarias.
         });
-    } catch (err) {
-        console.error('The API returned an error: ' + err);
-        return;
-    }
 
-    const rows = response.result.values;
-    if (rows.length > 0) {
-        const tableBody = document.getElementById('hTokenTableBody');
-        tableBody.innerHTML = ''; // Limpiar el cuerpo de la tabla antes de agregar nuevos datos.
-        // Saltarse la primera fila si contiene los encabezados de las columnas.
-        rows.slice(1).forEach((row) => {
-            // Crea una fila de tabla por cada registro.
-            let tr = `<tr>
-                        <td>${row[0]}</td>
-                        <td>${row[1]}</td>
-                        
-                      </tr>`;
-            tableBody.innerHTML += tr;
-        });
-        document.getElementById("H.TokenSection").style.display = "block"; // Mostrar la sección.
-    } else {
-        document.getElementById('H.TokenSection').innerHTML = '<p>No se encontraron datos.</p>';
+        const rows = response.result.values;
+        if (rows && rows.length > 0) {
+            console.log('Datos recibidos:', rows); // Log de los datos recibidos
+            const emisores = rows.slice(1).map(row => ({
+                nit: row[0],
+                nrc: row[1],
+                nombre: row[2],
+                codActividad: row[3],
+                descActividad: row[4],
+                nombreComercial: row[5],
+                tipoEstablecimiento: row[6],
+                direccion: {
+                    departamento: row[7],
+                    municipio: row[8],
+                    complemento: row[9],
+                },
+                telefono: row[10],
+                correo: row[11],
+                codEstableMH: row[12],
+                codEstable: row[13],
+                codPuntoVentaMH: row[14],
+                codPuntoVenta: row[15],
+            }));
+            //llenarTablaEmisores(emisores);
+            llenarSelectEmisores(emisores);
+        } else {
+            console.log('No se encontraron datos.');
+            alert('No se encontraron datos en la hoja especificada.');
+        }
+    } catch (err) {
+        console.error('The API returned an error: ', err);
+        alert('Hubo un error al obtener los datos: ' + err.message);
     }
 }
 
+// Función para llenar el select con emisores
+function llenarSelectEmisores(emisores) {
+    const emisorSelect = document.getElementById('emisorSelect');
+    emisorSelect.innerHTML = '<option value="" disabled selected>Seleccionar Emisor</option>'; // Limpiar el select
 
-//historial de emisor
-async function getEmisor(){
-    let response;
-    try {
-        response = await gapi.client.sheets.spreadsheets.values.get({
-            spreadsheetId: '1J__Pzj8RNIrwlojeF-mjBdWYtt9GH3QH3Je5SamLfSI',
-            range: 'h.emisor!A:H', // Asegúrate de que este rango cubra todas las columnas necesarias.
-        });
-    } catch (err) {
-        console.error('The API returned an error: ' + err);
-        return;
-    }
+    emisores.forEach((emisor, index) => {
+        let option = document.createElement('option');
+        option.value = index;
+        option.text = emisor.nombre;
+        emisorSelect.appendChild(option);
+    });
 
-    const rows = response.result.values;
-    if (rows.length > 0) {
-        const tableBody = document.getElementById('hEmisorTableBody');
-        tableBody.innerHTML = ''; // Limpiar el cuerpo de la tabla antes de agregar nuevos datos.
-        // Saltarse la primera fila si contiene los encabezados de las columnas.
-        rows.slice(1).forEach((row) => {
-            // Crea una fila de tabla por cada registro.
-            let tr = `<tr>
-                        <td>${row[0]}</td>
-                        <td>${row[1]}</td>
-                        <td>${row[2]}</td>
-                        <td>${row[3]}</td>
-                        <td>${row[4]}</td>
-                        <td>${row[5]}</td>
-                        <td>${row[6]}</td>
-                        <td>${row[7]}</td>
-                        <td class="text-center">
-                          <button class="btn btn-dark">Modificar</button>
-                          <button class="btn btn-danger">Eliminar</button>
-                        </td>
-                      </tr>`;
-            tableBody.innerHTML += tr;
-        });
-        document.getElementById("H.EmisorSection").style.display = "none"; // Mostrar la sección.
+    // Asociar evento onchange al select
+    emisorSelect.addEventListener('change', function() {
+        autocompletarEmisor(parseInt(this.value)); // Llama a autocompletarEmisor con el índice seleccionado convertido a entero
+    });
+
+    // Guardar los emisores en una variable global para acceder a ellos en la función autocompletarEmisor
+    window.emisores = emisores;
+}
+
+/*function llenarTablaEmisores(emisores) {
+    const tableBody = document.getElementById('emisorTableBody');
+    tableBody.innerHTML = ''; // Limpiar el cuerpo de la tabla antes de agregar nuevos datos.
+
+    emisores.forEach((emisor, index) => {
+        let tr = `<tr>
+                    <td>${emisor.nombre}</td>  <!-- Nombre -->
+                    <td class="text-center">
+                      <button class="btn btn-primary" onclick="autocompletarEmisor(${index})">Autocompletar</button>
+                    </td>
+                  </tr>`;
+        tableBody.innerHTML += tr;
+    });
+
+    // Guardar los emisores en una variable global para acceder a ellos en la función autocompletarCampos
+    window.emisores = emisores;
+}
+function mostrarOcultarEmisores() {
+    const emisoresSection = document.getElementById('EmisoresSection');
+    if (emisoresSection.style.display === 'none') {
+        emisoresSection.style.display = 'block';
+        document.getElementById('mostrarEmisoresButton').innerText = 'Ocultar Emisores';
     } else {
-        document.getElementById('H.EmisorSection').innerHTML = '<p>No se encontraron datos.</p>';
+        emisoresSection.style.display = 'none';
+        document.getElementById('mostrarEmisoresButton').innerText = 'Mostrar Emisores';
     }
 }
 
-//historial de receptor
-async function getReceptor(){
-    let response;
-    try {
-        response = await gapi.client.sheets.spreadsheets.values.get({
-            spreadsheetId: '1J__Pzj8RNIrwlojeF-mjBdWYtt9GH3QH3Je5SamLfSI',
-            range: 'h.receptor!A:K', // Asegúrate de que este rango cubra todas las columnas necesarias.
-        });
-    } catch (err) {
-        console.error('The API returned an error: ' + err);
-        return;
-    }
+*/
 
-    const rows = response.result.values;
-    if (rows.length > 0) {
-        const tableBody = document.getElementById('hReceptorTableBody');
-        tableBody.innerHTML = ''; // Limpiar el cuerpo de la tabla antes de agregar nuevos datos.
-        // Saltarse la primera fila si contiene los encabezados de las columnas.
-        rows.slice(1).forEach((row) => {
-            // Crea una fila de tabla por cada registro.
-            let tr = `<tr>
-                        <td>${row[0]}</td>
-                        <td>${row[1]}</td>
-                        <td>${row[3]}</td>
-                        
-                       
-                        <td class="text-center">
-                          <button class="btn btn-dark">Modificar</button>
-                          <button class="btn btn-danger">Eliminar</button>
-                        </td>
-                      </tr>`;
-            tableBody.innerHTML += tr;
-        });
-        document.getElementById("H.ReceptorSection").style.display = "none"; 
+function autocompletarEmisor(index) {
+    const emisor = window.emisores[index];
+
+    if (emisor) {
+        document.getElementById('NIT').value = emisor.nit || '';
+        document.getElementById('nrc').value = emisor.nrc || '';
+        document.getElementById('nombre').value = emisor.nombre || '';
+        document.getElementById('codActividad').value = emisor.codActividad || '';
+        document.getElementById('descActividad').value = emisor.descActividad || '';
+        document.getElementById('nombreComercial').value = emisor.nombreComercial || '';
+        document.getElementById('departamento').value= emisor.departamento || '';
+        document.getElementById('municipio').value = emisor.direccion.municipio || '';
+        document.getElementById('complemento').value = emisor.direccion.complemento || '';
+        document.getElementById('telefono').value = emisor.telefono || '';
+        document.getElementById('correo').value = emisor.correo || '';
+        //document.getElementById('tipoEstablecimiento').value = emisor.tipoEstablecimiento || '';
+        /*document.getElementById('codEstableMH').value = emisor.codEstableMH || '';
+        document.getElementById('codEstable').value = emisor.codEstable || '';
+        document.getElementById('codPuntoVentaMH').value = emisor.codPuntoVentaMH || '';
+        document.getElementById('codPuntoVenta').value = emisor.codPuntoVenta || '';*/
+
+        /* Autocompletar departamento
+
+        const departamentoSelect = document.getElementById('departamento');
+        const departamentoValue = emisor.direccion.departamento;
+        let optionExists = false;
+
+        for (let i = 0; i < departamentoSelect.options.length; i++) {
+            if (departamentoSelect.options[i].value === departamentoValue) {
+                optionExists = true;
+                break;
+            }
+        }
+
+        if (!optionExists) {
+            const newOption = document.createElement('option');
+            newOption.value = departamentoValue;
+            newOption.text = `Departamento ${departamentoValue}`;
+            departamentoSelect.appendChild(newOption);
+        }
+
+        departamentoSelect.value = departamentoValue;
+        */
     } else {
-        document.getElementById('H.ReceptorSection').innerHTML = '<p>No se encontraron datos.</p>';
+        console.error('Emisor no encontrado para el índice:', index);
     }
+        
 }
 
 //envio de emisor
-
 async function createEmisor() {
     const emisorData = {
-        Nombre: document.getElementById('nombre').value,
-        NombreComercial: document.getElementById('nombreComercial').value,
-        Actividad: document.getElementById('actividad').value,
-        NCR: document.getElementById('ncr').value,
-        NIT: document.getElementById('nit').value,
-        Departamento: document.getElementById('departamento').value,
-        Municipio: document.getElementById('municipio').value,
-        Correo: document.getElementById('correo').value,
+        nit: document.getElementById('nit').value,
+        nrc: document.getElementById('nrc').value,
+        nombre: document.getElementById('nombre').value,
+        codActividad: document.getElementById('codActividad').value,
+        descActividad: document.getElementById('descActividad').value,
+        nombreComercial: document.getElementById('nombreComercial').value,
+        tipoEstablecimiento: document.getElementById('tipoEstablecimiento').value,
+        departamento: document.getElementById('departamento').value,
+        municipio: document.getElementById('municipio').value,
+        complemento: document.getElementById('complemento').value,
+        telefono: document.getElementById('telefono').value,
+        correo: document.getElementById('correo').value,
+        codEstableMH: document.getElementById('codEstableMH').value,
+        codEstable: document.getElementById('codEstable').value,
+        codPuntoVentaMH: document.getElementById('codPuntoVentaMH').value,
+        codPuntoVenta: document.getElementById('codPuntoVenta').value,
         FechaCreacion: new Date().toISOString()
     };
 
     const newRow = [
-        emisorData.Nombre,
-        emisorData.NombreComercial,
-        emisorData.Actividad,
-        emisorData.NCR,
-        emisorData.NIT,
-        emisorData.Departamento,
-        emisorData.Municipio,
-        emisorData.Correo,
+        emisorData.nit,
+        emisorData.nrc,
+        emisorData.nombre,
+        emisorData.codActividad,
+        emisorData.descActividad,
+        emisorData.nombreComercial,
+        emisorData.tipoEstablecimiento,
+        emisorData.departamento,
+        emisorData.municipio,
+        emisorData.complemento,
+        emisorData.telefono,
+        emisorData.correo,
+        emisorData.codEstableMH,
+        emisorData.codEstable,
+        emisorData.codPuntoVentaMH,
+        emisorData.codPuntoVenta,
         emisorData.FechaCreacion
     ];
 
@@ -250,21 +322,27 @@ document.getElementById('emisorForm').addEventListener('submit', function(event)
     createEmisor();
 });
 
+// Event listener para el formulario del Receptor
+document.getElementById('receptorForm').addEventListener('submit', function(event) {
+    event.preventDefault(); // Prevenir el envío del formulario por defecto
+    createReceptor();
+});
 
 //envio de receptor
 // Función para recopilar los datos del formulario del Receptor
 function collectReceptorFormData() {
     const data = {
-        Nombre: document.getElementById('nombreReceptor').value,
-        TipoDocumento: document.getElementById('tipoDocumento').value,
-        NumeroDocumento: document.getElementById('numDocumento').value,
-        NRC: document.getElementById('nrc').value,
-        Departamento: document.getElementById('departamentoReceptor').value,
-        Municipio: document.getElementById('municipioReceptor').value,
-        Complemento: document.getElementById('complemento').value,
-        Telefono: document.getElementById('telefono').value,
-        Actividad: document.getElementById('actividadReceptor').value,
-        Correo: document.getElementById('correoReceptor').value,
+        nit: document.getElementById('nitReceptor').value,
+        nrc: document.getElementById('nrc').value,
+        nombre: document.getElementById('nombreReceptor').value,
+        codActividad: document.getElementById('codActividad').value,
+        descActividad: document.getElementById('descActividad').value,
+        nombreComercial: document.getElementById('nombreComercial').value,
+        departamento: document.getElementById('departamentoReceptor').value,
+        municipio: document.getElementById('municipioReceptor').value,
+        complemento: document.getElementById('complemento').value,
+        telefono: document.getElementById('telefono').value,
+        correo: document.getElementById('correoReceptor').value,
         FechaCreacion: new Date().toISOString()
     };
     return data;
@@ -279,11 +357,108 @@ async function createReceptor() {
     sendDataToSheet(sheetName, newRow);
 }
 
-// Event listener para el formulario del Receptor
-document.getElementById('receptorForm').addEventListener('submit', function(event) {
-    event.preventDefault(); // Prevenir el envío del formulario por defecto
-    createReceptor();
-});
+async function cargarReceptoresDesdeGoogleSheets() {
+    try {
+        const response = await gapi.client.sheets.spreadsheets.values.get({
+            spreadsheetId: '1J__Pzj8RNIrwlojeF-mjBdWYtt9GH3QH3Je5SamLfSI',
+            range: 'h.receptor!A:L', // Asegúrate de que este rango cubra todas las columnas necesarias.
+        });
+
+        const rows = response.result.values;
+        if (rows && rows.length > 0) {
+            console.log('Datos recibidos:', rows); // Log de los datos recibidos
+            const receptores = rows.slice(1).map(row => ({
+                nit: row[0],
+                nrc: row[1],
+                nombre: row[2],
+                codActividad: row[3],
+                descActividad: row[4],
+                nombreComercial: row[5],
+                tipoEstablecimiento: row[6],
+                direccion: {
+                    departamento: row[7],
+                    municipio: row[8],
+                    complemento: row[9],
+                },
+                telefono: row[10],
+                correo: row[11],
+            }));
+            //llenarTablaEmisores(emisores);
+            llenarSelectReceptores(receptores);
+        } else {
+            console.log('No se encontraron datos.');
+            alert('No se encontraron datos en la hoja especificada.');
+        }
+    } catch (err) {
+        console.error('The API returned an error: ', err);
+        alert('Hubo un error al obtener los datos: ' + err.message);
+    }
+}
+
+// Función para llenar el select con emisores
+function llenarSelectReceptores(receptores) {
+    const receptorSelect = document.getElementById('receptorSelect');
+    receptorSelect.innerHTML = '<option value="" disabled selected>Seleccionar Receptor</option>'; // Limpiar el select
+
+    receptores.forEach((receptor, index) => {
+        let option = document.createElement('option');
+        option.value = index;
+        option.text = receptor.nombre;
+        receptorSelect.appendChild(option);
+    });
+
+    // Asociar evento onchange al select
+    receptorSelect.addEventListener('change', function() {
+        autocompletarReceptor(parseInt(this.value)); // Llama a autocompletarEmisor con el índice seleccionado convertido a entero
+    });
+
+    // Guardar los emisores en una variable global para acceder a ellos en la función autocompletarEmisor
+    window.receptores = receptores;
+}
+
+function autocompletarReceptor(index) {
+    const receptor = window.receptores[index];
+
+    if (receptor) {
+        document.getElementById('nitReceptor').value = receptor.nit || '';
+        document.getElementById('nrcReceptor').value = receptor.nrc || '';
+        document.getElementById('nombreReceptor').value = receptor.nombre || '';
+        document.getElementById('codActividadReceptor').value = receptor.codActividad || '';
+        document.getElementById('descActividadReceptor').value = receptor.descActividad || '';
+        document.getElementById('nombreComercialReceptor').value = receptor.nombreComercial || '';
+        document.getElementById('departamentoReceptor').value = receptor.departamento || '';
+        document.getElementById('municipioReceptor').value = receptor.direccion.municipio || '';
+        document.getElementById('complementoReceptor').value = receptor.direccion.complemento || '';
+        document.getElementById('telefonoReceptor').value = receptor.telefono || '';
+        document.getElementById('correoReceptor').value = receptor.correo || '';
+      
+        /* Autocompletar departamento
+
+        const departamentoSelect = document.getElementById('departamento');
+        const departamentoValue = emisor.direccion.departamento;
+        let optionExists = false;
+
+        for (let i = 0; i < departamentoSelect.options.length; i++) {
+            if (departamentoSelect.options[i].value === departamentoValue) {
+                optionExists = true;
+                break;
+            }
+        }
+
+        if (!optionExists) {
+            const newOption = document.createElement('option');
+            newOption.value = departamentoValue;
+            newOption.text = `Departamento ${departamentoValue}`;
+            departamentoSelect.appendChild(newOption);
+        }
+
+        departamentoSelect.value = departamentoValue;
+        */
+    } else {
+        console.error('Emisor no encontrado para el índice:', index);
+    }
+        
+}
 
 // Arreglo para almacenar los detalles ingresados
 let detallesIngresados = [];
@@ -348,7 +523,6 @@ function mostrarDetallesIngresados() {
         detallesBody.appendChild(row);
     });
 }
-
 
 // Función para enviar el detalle a Google Sheets
 async function enviarDetalleAGoogleSheets(detalle) {

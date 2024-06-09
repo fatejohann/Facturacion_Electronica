@@ -39,8 +39,10 @@
         </div>
     </nav>
 
-    <div id="H.TokenSection" style="display: block;">
-        <div class="container">
+    <!-- Sección del historial de Tokens -->
+<div id="H.TokenSection" style="display: block;">
+    <div class="container">
+        <div class="table-responsive">
             <table class="table table-bordered">
                 <thead class="thead-dark">
                     <tr>
@@ -54,45 +56,43 @@
             </table>
         </div>
     </div>
+</div>
 
-    <div id="H.TiposDocumentoSection" style="display: none;">
-        <div class="container text-center mt-5">
-            <h1 class="mb-4">Historial de Documentos</h1>
-            <div class="table-responsive">
-                <table class="table table-bordered">
-                    <thead class="thead-dark">
-                        <tr>
-                            <th scope="col">Fecha de emitido</th>
-                            <th scope="col">Código de Generación</th>
-                            <th scope="col">Sello de Recibido</th>
-                            <th scope="col">Operaciones</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td>2024-02-21</td>
-                            <td>0DB977B1-BD4F-4320-B6C2-188849287E6B</td>
-                            <td>20242AE935AF3EDC48C28FE67566E9FAFB607AJVM</td>
-                            <td><button class="btn btn-dark">Obtener PDF</button></td>
-                        </tr>
-                        <!-- Agrega más filas según sea necesario -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </div>
-
-    <div id="H.ReceptorSection" style="display: none;">
-        <div class="container">
-            <h1 class="text-center">Receptor</h1>
-
-            <table class="table table-bordered">
+<!-- Sección del historial de DTE -->
+<div id="H.TiposDocumentoSection" style="display: none;">
+    <div class="container text-center mt-5">
+        <h1 class="mb-4">Historial de Documentos</h1>
+        <div class="table-responsive">
+            <table class="table table-bordered table-sm">
                 <thead class="thead-dark">
                     <tr>
-                        <th>Nombre</th>
-                        <th>Tipo documento</th>
-                        <th>NRC</th>
-                        <th>Acciones</th>
+                        <th scope="col">Fecha de Creación</th>
+                        <th scope="col">Fecha de Recibido</th>
+                        <th scope="col">Sello de Recibido</th>
+                        <th scope="col">Tipo de DTE</th>
+                        <th scope="col">Operaciones</th>
+                    </tr>
+                </thead>
+                <tbody id="dteHistoryTableBody">
+                    <!-- Los datos del historial de DTE se insertarán aquí -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Sección del historial de Receptor -->
+<div id="H.ReceptorSection" style="display: none;">
+    <div class="container text-center mt-5">
+        <h1 class="mb-4">Receptor</h1>
+        <div class="table-responsive">
+            <table class="table table-bordered table-sm">
+                <thead class="thead-dark">
+                    <tr>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">NIT</th>
+                        <th scope="col">NRC</th>
+                     <!--   <th scope="col">Acciones</th>   -->   
                     </tr>
                 </thead>
                 <tbody id="hReceptorTableBody">
@@ -101,21 +101,26 @@
             </table>
         </div>
     </div>
+</div>
 
-    <div id="H.EmisorSection" style="display: none;">
-        <div class="container">
-            <table class="table table-bordered">
+
+<!-- Sección del historial de Emisor -->
+<div id="H.EmisorSection" style="display: none;">
+    <div class="container text-center mt-5"> 
+        <h1 class="mb-4">Emisor</h1>
+        <div class="table-responsive">
+            <table class="table table-bordered table-sm">
                 <thead class="thead-dark">
                     <tr>
-                        <th>Nombre</th>
-                        <th>Nombre Comercial</th>
-                        <th>Actividad</th>
-                        <th>NCR</th>
-                        <th>NIT</th>
-                        <th>Departamento</th>
-                        <th>Municipio</th>
-                        <th>Correo</th>
-                        <th>Acciones</th>
+                        <th scope="col">Nombre</th>
+                        <th scope="col">Comercial</th>
+                        <th scope="col">Actividad</th>
+                        <th scope="col">NCR</th>
+                        <th scope="col">NIT</th>
+                        <th scope="col">Depto.</th>
+                        <th scope="col">Muni.</th>
+                        <th scope="col">Correo</th>
+                        <th scope="col">Acciones</th>
                     </tr>
                 </thead>
                 <tbody id="hEmisorTableBody">
@@ -124,14 +129,17 @@
             </table>
         </div>
     </div>
+</div>
+
 
     <!-- Autenticación -->
-    <button id="authorize_button" onclick="handleAuthClick()">Authorize</button>
+    <button id="authorize_button" onclick="handleAuthClickHistoriales()">Authorize</button>
     <button id="signout_button" onclick="handleSignoutClick()">Sign Out</button>
 
     <script async defer src="https://apis.google.com/js/api.js" id="gapi"></script>
     <script async defer src="https://accounts.google.com/gsi/client" id="gis"></script>
-    <script src="js/sheets.js"></script>
+    <!-- Enlace a Axios para realizar solicitudes HTTP -->
+    <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
     <script src="js/api.js"></script>
     <script src="js/historiales.js"></script>
 </body>

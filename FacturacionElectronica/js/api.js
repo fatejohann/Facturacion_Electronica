@@ -7,8 +7,7 @@
 /* exported handleSignoutClick */
 
 // TODO(developer): Set to client ID and API key from the Developer Console
-const CLIENT_ID =
-  "135925497494-bbnq1fkal8i9qivu7u7ncjrl2eki7hnj.apps.googleusercontent.com";
+const CLIENT_ID ="135925497494-bbnq1fkal8i9qivu7u7ncjrl2eki7hnj.apps.googleusercontent.com";
 const API_KEY = "AIzaSyAIPDRfAJcv_cXME1ltyTgmi0WLwFLuXqY";
 
 // Discovery doc URL for APIs used by the quickstart
@@ -76,25 +75,74 @@ function maybeEnableButtons() {
  */
 function handleAuthClick() {
   tokenClient.callback = async (resp) => {
+    console.log("Callback de autenticación iniciado.");
     if (resp.error !== undefined) {
+      console.error("Error de autenticación:", resp.error);
       throw resp;
     }
+    console.log("Autenticación exitosa, token recibido:", resp);
     document.getElementById("signout_button").style.visibility = "visible";
     document.getElementById("authorize_button").innerText = "Refresh";
-    await getEmisor(); // Llamar a la función para obtener los datos
-    getToken();
-    getReceptor();
+    await getLastToken();
+    console.log("Llamando a cargarEmisoresDesdeGoogleSheets...");
+    await cargarEmisoresDesdeGoogleSheets();
+    await cargarReceptoresDesdeGoogleSheets();
   };
 
   if (gapi.client.getToken() === null) {
-    // Prompt the user to select a Google Account and ask for consent to share their data
-    // when establishing a new session.
+    console.log("Solicitando nuevo token de acceso...");
     tokenClient.requestAccessToken({ prompt: "consent" });
   } else {
-    // Skip display of account chooser and consent dialog for an existing session.
+    console.log("Usando token de acceso existente...");
     tokenClient.requestAccessToken({ prompt: "" });
   }
 }
+
+/**
+ *  Sign in the user upon button click.
+ */
+function handleAuthClickHistoriales() {
+  tokenClient.callback = async (resp) => {
+    console.log("Callback de autenticación iniciado.");
+    if (resp.error !== undefined) {
+      console.error("Error de autenticación:", resp.error);
+      throw resp;
+    }
+    console.log("Autenticación exitosa, token recibido:", resp);
+    document.getElementById("signout_button").style.visibility = "visible";
+    document.getElementById("authorize_button").innerText = "Refresh";
+   await fetchData();
+   await getLastToken();
+  };
+
+  if (gapi.client.getToken() === null) {
+    console.log("Solicitando nuevo token de acceso...");
+    tokenClient.requestAccessToken({ prompt: "consent" });
+  } else {
+    console.log("Usando token de acceso existente...");
+    tokenClient.requestAccessToken({ prompt: "" });
+  }
+}
+
+/**
+ * Fetch data after authorization.
+ */
+async function fetchData() {
+  try {
+    console.log("Llamando a getEmisor...");
+    await getEmisor();
+    console.log("Llamando a getToken...");
+    await getToken();
+    console.log("Llamando a getReceptor...");
+    await getReceptor();
+    console.log("Llamando a getDteHistory...");
+    await getDteHistory();
+    
+  } catch (err) {
+    console.error("Error en fetchData:", err);
+  }
+}
+
 
 /**
  *  Sign out the user upon button click.
@@ -109,6 +157,7 @@ function handleSignoutClick() {
     document.getElementById("signout_button").style.visibility = "hidden";
   }
 }
+
 
 //inicio
 function showEmisor() {

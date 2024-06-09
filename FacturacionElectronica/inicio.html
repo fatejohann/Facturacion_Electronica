@@ -40,18 +40,25 @@
                 </li>
 
                 <li class="nav-item">
-                    <button class="btn btn-link nav-link" onclick="showEventosdeContingencia()">Eventos de Contingencia</button>
+                    <button class="btn btn-link nav-link" onclick="showEventosdeContingencia()">Eventos de
+                        Contingencia</button>
                 </li>
                 <li class="nav-item">
-                    <button class="btn btn-link nav-link" onclick="showEventosdeValidacion()">Eventos de Validacion</button>
+                    <button class="btn btn-link nav-link" onclick="showEventosdeValidacion()">Eventos de
+                        Validacion</button>
                 </li>
             </ul>
             <!-- "Historiales" en el lado derecho -->
             <div class="navbar-nav">
                 <a href="historiales.html" class="nav-item nav-link btn btn-info text-white">Historiales</a>
             </div>
+            <div class="navbar-nav">
+                <a href="registros.html" class="nav-item nav-link btn btn-info text-white">Registros</a>
+            </div>
         </div>
     </nav>
+    <button id="authorize_button" onclick="handleAuthClick()">Authorize</button>
+    <button id="signout_button" onclick="handleSignoutClick()">Sign Out</button>
 
     <div class="container mt-5"> <!-- Aumenta el margen superior para mayor separación -->
         <div class="row">
@@ -84,14 +91,14 @@
                                     <input type="text" class="form-control" id="nit" name="nit">
                                 </div>
                             </div>
-    
+
                             <div class="form-group row">
                                 <label for="password" class="col-sm-3 col-form-label">Contraseña:</label>
                                 <div class="col-sm-9">
                                     <input type="password" class="form-control" id="password" name="password">
                                 </div>
                             </div>
-    
+
                             <div class="form-group row">
                                 <div class="col-sm-9 offset-sm-3">
                                     <button type="submit" class="btn btn-primary">Enviar</button>
@@ -101,20 +108,32 @@
                     </div>
                 </div>
             </div>
+            <!--<p id="tokenDisplay"></p>-->
+            <div class="container mt-5">
+                <!-- Sección para mostrar el último token -->
+                <div class="section" id="lastTokenSection" style="display:none;">
+                    <h2>Último Token:</h2>
+                    <div class="table-responsive">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>Fecha</th>
+                                    <th>Token</th>
+                                </tr>
+                            </thead>
+                            <tbody id="lastTokenTableBody">
+                                <!-- Los datos del último token se insertarán aquí -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <p id="tokenStatus"></p> <!-- Este párrafo mostrará el estado del token -->
+                </div>
+            </div>
         </div>
     </div>
-    <div class="container mt-5">
-        <div class="section" id="lastTokenSection">
-            <h2>Último Token:</h2>
-            <p id="tokenDisplay"></p>
-            <tbody id="hTokenTableBody">
-                
-            </tbody>
-        </div>
-    </div>
-    
 
-      <div class="section" id="TiposdeDocumentoSection">
+
+    <div class="section" id="TiposdeDocumentoSection">
         <div class="container">
             <div class="card">
                 <div class="card-header">
@@ -138,7 +157,8 @@
                         </select>
                         <div class="form-group row">
                             <div class="col-sm-9 offset-sm-3">
-                                <button type="button" class="btn btn-primary" id="submitDocumentButton">Enviar documento</button>
+                                <button type="button" class="btn btn-primary" id="submitDocumentButton">Enviar
+                                    documento</button>
                             </div>
                         </div>
                     </div>
@@ -146,262 +166,281 @@
             </div>
         </div>
     </div>
-    
-    
 
 
-
-
-        <div class="section" id="emisorSection" style="display: none;">
-            <div class="container">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="card-title">Datos del Emisor</h5>
+    <div class="section" id="emisorSection" style="display: none;">
+        <div class="container">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Datos del Emisor</h5>
+                </div>
+                <div class="card-body">
+                    <!-- Select para emisores -->
+                    <div class="form-group">
+                        <label for="emisorSelect">Seleccionar Emisor</label>
+                        <select class="form-control" id="emisorSelect" onchange="autocompletarEmisor()">
+                            <option value="" disabled selected>Seleccionar Emisor</option>
+                        </select>
                     </div>
-                    <div class="card-body">
-                        <form id="emisorForm">
-                            <div class="form-group row">
-                                <label for="nombre" class="col-sm-3 col-form-label">Nombre</label>
-                                <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="nombre" placeholder="Nombre">
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label for="nombreComercial" class="col-sm-3 col-form-label">Nombre Comercial</label>
-                                <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="nombreComercial" placeholder="Nombre Comercial">
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label for="actividad" class="col-sm-3 col-form-label">Actividad</label>
-                                <div class="col-sm-9">
-                                    <select class="form-control" id="actividad">
-                                        <option value="" disabled selected>Seleccionar uno</option>
-                                        <option value="1">Actividad 1</option>
-                                        <option value="2">Actividad 2</option>
-                                        <option value="3">Actividad 3</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label for="ncr" class="col-sm-3 col-form-label">NCR</label>
-                                <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="ncr" placeholder="NCR">
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label for="nit" class="col-sm-3 col-form-label">NIT</label>
-                                <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="nit" placeholder="NIT">
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label for="departamento" class="col-sm-3 col-form-label">Departamento</label>
-                                <div class="col-sm-9">
-                                    <select class="form-control" id="departamento">
-                                        <option value="" disabled selected>Seleccionar uno</option>
-                                        <option value="1">Departamento 1</option>
-                                        <option value="2">Departamento 2</option>
-                                        <option value="3">Departamento 3</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label for="municipio" class="col-sm-3 col-form-label">Municipio</label>
-                                <div class="col-sm-9">
-                                    <select class="form-control" id="municipio">
-                                        <option value="" disabled selected>Seleccionar uno</option>
-                                        <option value="1">Municipio 1</option>
-                                        <option value="2">Municipio 2</option>
-                                        <option value="3">Municipio 3</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label for="correo" class="col-sm-3 col-form-label">Correo</label>
-                                <div class="col-sm-9">
-                                    <input type="email" class="form-control" id="correo" placeholder="Correo">
-                                </div>
-                            </div>
+                    
+                    <form id="emisorForm">
 
-                        </form>
+                        <div class="form-group row">
+                            <label for="nit" class="col-sm-3 col-form-label">NIT</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="NIT" placeholder="NIT">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="nrc" class="col-sm-3 col-form-label">NRC</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="nrc" placeholder="NRC">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="nombre" class="col-sm-3 col-form-label">Nombre</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="nombre" placeholder="Nombre">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="codActividad" class="col-sm-3 col-form-label">Código de Actividad</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="codActividad"
+                                    placeholder="Código de Actividad">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="descActividad" class="col-sm-3 col-form-label">Descripción de Actividad</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="descActividad"
+                                    placeholder="Descripción de Actividad">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="nombreComercial" class="col-sm-3 col-form-label">Nombre Comercial</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="nombreComercial"
+                                    placeholder="Nombre Comercial">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="departamento" class="col-sm-3 col-form-label">Departamento</label>
+                            <div class="col-sm-9">
+                                <select class="form-control" id="departamento">
+                                    <option value="" disabled selected>Seleccionar uno</option>
+                                    <option value="06">departamento 6</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="municipio" class="col-sm-3 col-form-label">Municipio</label>
+                            <div class="col-sm-9">
+                                <select class="form-control" id="municipio">
+                                    <option value="" disabled selected>Seleccionar uno</option>
+                                    <option value="14">Municipio 14</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="complemento" class="col-sm-3 col-form-label">Complemento</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="complemento" placeholder="Dirección">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="telefono" class="col-sm-3 col-form-label">Teléfono</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="telefono" placeholder="Teléfono">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="correo" class="col-sm-3 col-form-label">Correo</label>
+                            <div class="col-sm-9">
+                                <input type="email" class="form-control" id="correo" placeholder="Correo">
+                            </div>
+                        </div>
+                        
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="section" id="receptorSection" style="display: none;">
+        <div class="container">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Datos del Receptor</h5>
+                </div>
+                <div class="card-body">
+                    <!-- Select para receptores -->
+                    <div class="form-group">
+                        <label for="receptorSelect">Seleccionar Receptor</label>
+                        <select class="form-control" id="receptorSelect" onchange="autocompletarReceptor()">
+                            <option value="" disabled selected>Seleccionar Receptor</option>
+                        </select>
+                    </div>
+                    <form id="receptorForm">
+                        <div class="form-group row">
+                            <label for="nitReceptor" class="col-sm-3 col-form-label">NIT</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="nitReceptor" placeholder="NIT"
+                                    value="06142803901121">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="nrcReceptor" class="col-sm-3 col-form-label">NRC</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="nrcReceptor" placeholder="NRC" value="2398810">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="nombreReceptor" class="col-sm-3 col-form-label">Nombre</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="nombreReceptor" placeholder="Nombre"
+                                    value="Gerardo juárez">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="codActividadReceptor" class="col-sm-3 col-form-label">Código de Actividad</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="codActividadReceptor"
+                                    placeholder="Código de Actividad" value="73100">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="descActividadReceptor" class="col-sm-3 col-form-label">Descripción de Actividad</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="descActividadReceptor"
+                                    placeholder="Descripción de Actividad" value="publicidad">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="nombreComercialReceptor" class="col-sm-3 col-form-label">Nombre Comercial</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="nombreComercialReceptor"
+                                    placeholder="Nombre Comercial" value="fundacion">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="departamentoReceptor" class="col-sm-3 col-form-label">Departamento</label>
+                            <div class="col-sm-9">
+                                <select class="form-control" id="departamentoReceptor">
+                                    <option value="" disabled selected>Seleccionar uno</option>
+                                    <option value="06" selected>Departamento 6</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="municipioReceptor" class="col-sm-3 col-form-label">Municipio</label>
+                            <div class="col-sm-9">
+                                <select class="form-control" id="municipioReceptor">
+                                    <option value="" disabled selected>Seleccionar uno</option>
+                                    <option value="14" selected>Municipio 14</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="complementoReceptor" class="col-sm-3 col-form-label">Complemento</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="complementoReceptor" placeholder="Dirección"
+                                    value="San Salvador">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="telefonoReceptor" class="col-sm-3 col-form-label">Teléfono</label>
+                            <div class="col-sm-9">
+                                <input type="text" class="form-control" id="telefonoReceptor" placeholder="Teléfono">
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label for="correoReceptor" class="col-sm-3 col-form-label">Correo</label>
+                            <div class="col-sm-9">
+                                <input type="email" class="form-control" id="correoReceptor" placeholder="Correo"
+                                    value="gj23726116@gmail.com">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="section" id="detallesSection" style="display: none;">
+        <div class="container">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title">Detalle de Ventas</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table" id="detalleVentasTable">
+                            <thead>
+                                <tr>
+                                    <th>Cantidad</th>
+                                    <th>Descripción</th>
+                                    <th>Precio Unitario</th>
+                                    <th>Ventas No Sujetas</th>
+                                    <th>Ventas Exentas</th>
+                                    <th>Ventas Afectas</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td><input type="text" class="form-control" id="cantidad"></td>
+                                    <td>
+                                        <select class="form-control" id="descripcion">
+                                            <option value="">Seleccionar</option>
+                                            <option value="Producto 1">Producto 1</option>
+                                            <option value="Producto 2">Producto 2</option>
+                                        </select>
+                                    </td>
+                                    <td><input type="text" class="form-control" id="precio"></td>
+                                    <td><input type="text" class="form-control" id="ventasNoSujetas"></td>
+                                    <td><input type="text" class="form-control" id="ventasExentas"></td>
+                                    <td><input type="text" class="form-control" id="ventasAfectas"></td>
+                                </tr>
+                                <!-- Puedes agregar más filas según sea necesario -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="text-center">
+                        <button class="btn btn-primary" onclick="agregarDetalle()">Agregar Detalle</button>
+                    </div>
+                    <div class="mt-3">
+                        <h5>Detalles Ingresados</h5>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Cantidad</th>
+                                    <th>Descripción</th>
+                                    <th>Precio Unitario</th>
+                                    <th>Ventas No Sujetas</th>
+                                    <th>Ventas Exentas</th>
+                                    <th>Ventas Afectas</th>
+                                </tr>
+                            </thead>
+                            <tbody id="detallesIngresadosBody">
+                                <!-- Aquí se mostrarán los detalles ingresados -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
         </div>
-        
+    </div>
 
-        <div class="section" id="receptorSection" style="display: none;">
-            <div class="container">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="card-title">Datos del Receptor</h5>
-                    </div>
-                    <div class="card-body">
-                        <form id="receptorForm">
-                            <div class="form-group row">
-                                <label for="nombreReceptor" class="col-sm-3 col-form-label">Nombre</label>
-                                <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="nombreReceptor" placeholder="Nombre">
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label for="tipoDocumento" class="col-sm-3 col-form-label">Tipo documento</label>
-                                <div class="col-sm-9">
-                                    <select class="form-control" id="tipoDocumento">
-                                        <option value="" disabled selected>Seleccionar uno</option>
-                                        <option value="1">Tipo 1</option>
-                                        <option value="2">Tipo 2</option>
-                                        <option value="3">Tipo 3</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label for="numDocumento" class="col-sm-3 col-form-label">N° de documento</label>
-                                <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="numDocumento" placeholder="N° de documento">
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label for="nrc" class="col-sm-3 col-form-label">NRC</label>
-                                <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="nrc" placeholder="NRC">
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label for="departamentoReceptor" class="col-sm-3 col-form-label">Departamento</label>
-                                <div class="col-sm-9">
-                                    <select class="form-control" id="departamentoReceptor">
-                                        <option value="" disabled selected>Seleccionar uno</option>
-                                        <option value="1">Departamento 1</option>
-                                        <option value="2">Departamento 2</option>
-                                        <option value="3">Departamento 3</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label for="municipioReceptor" class="col-sm-3 col-form-label">Municipio</label>
-                                <div class="col-sm-9">
-                                    <select class="form-control" id="municipioReceptor">
-                                        <option value="" disabled selected>Seleccionar uno</option>
-                                        <option value="1">Municipio 1</option>
-                                        <option value="2">Municipio 2</option>
-                                        <option value="3">Municipio 3</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label for="complemento" class="col-sm-3 col-form-label">Complemento</label>
-                                <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="complemento" placeholder="Dirección">
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label for="telefono" class="col-sm-3 col-form-label">Teléfono</label>
-                                <div class="col-sm-9">
-                                    <input type="text" class="form-control" id="telefono" placeholder="Teléfono">
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label for="actividadReceptor" class="col-sm-3 col-form-label">Actividad</label>
-                                <div class="col-sm-9">
-                                    <select class="form-control" id="actividadReceptor">
-                                        <option value="" disabled selected>Seleccionar uno</option>
-                                        <option value="1">Actividad 1</option>
-                                        <option value="2">Actividad 2</option>
-                                        <option value="3">Actividad 3</option>
-                                    </select>
-                                </div>
-                            </div>
-                            <div class="form-group row">
-                                <label for="correoReceptor" class="col-sm-3 col-form-label">Correo</label>
-                                <div class="col-sm-9">
-                                    <input type="email" class="form-control" id="correoReceptor" placeholder="Correo">
-                                </div>
-                            </div>
-                            
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
+    <script async defer src="https://apis.google.com/js/api.js" id="gapi"></script>
+    <script async defer src="https://accounts.google.com/gsi/client" id="gis"></script>
 
-        <div class="section" id="detallesSection" style="display: none;">
-            <div class="container">
-                <div class="card">
-                    <div class="card-header">
-                        <h5 class="card-title">Detalle de Ventas</h5>
-                    </div>
-                    <div class="card-body">
-                        <div class="table-responsive">
-                            <table class="table" id="detalleVentasTable">
-                                <thead>
-                                    <tr>
-                                        <th>Cantidad</th>
-                                        <th>Descripción</th>
-                                        <th>Precio Unitario</th>
-                                        <th>Ventas No Sujetas</th>
-                                        <th>Ventas Exentas</th>
-                                        <th>Ventas Afectas</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    <tr>
-                                        <td><input type="text" class="form-control" id="cantidad"></td>
-                                        <td>
-                                            <select class="form-control" id="descripcion">
-                                                <option value="">Seleccionar</option>
-                                                <option value="Producto 1">Producto 1</option>
-                                                <option value="Producto 2">Producto 2</option>
-                                            </select>
-                                        </td>
-                                        <td><input type="text" class="form-control" id="precio"></td>
-                                        <td><input type="text" class="form-control" id="ventasNoSujetas"></td>
-                                        <td><input type="text" class="form-control" id="ventasExentas"></td>
-                                        <td><input type="text" class="form-control" id="ventasAfectas"></td>
-                                    </tr>
-                                    <!-- Puedes agregar más filas según sea necesario -->
-                                </tbody>
-                            </table>
-                        </div>
-                        <div class="text-center">
-                            <button class="btn btn-primary" onclick="agregarDetalle()">Agregar Detalle</button>
-                        </div>
-                        <div class="mt-3">
-                            <h5>Detalles Ingresados</h5>
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Cantidad</th>
-                                        <th>Descripción</th>
-                                        <th>Precio Unitario</th>
-                                        <th>Ventas No Sujetas</th>
-                                        <th>Ventas Exentas</th>
-                                        <th>Ventas Afectas</th>
-                                    </tr>
-                                </thead>
-                                <tbody id="detallesIngresadosBody">
-                                    <!-- Aquí se mostrarán los detalles ingresados -->
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>   
-        
-        //agregar un boton que me permita realizar las dos acciones de la creacion del dte y el envio del dte
-        // y luego en los historiales de tipo de dte trabajar el boton de obtener pdf
-        <button id="authorize_button" onclick="handleAuthClick()">Authorize</button>
-        <button id="signout_button" onclick="handleSignoutClick()">Sign Out</button>
-    
-        <script async defer src="https://apis.google.com/js/api.js" id="gapi"></script>
-        <script async defer src="https://accounts.google.com/gsi/client" id="gis"></script>
-        <script src="https://accounts.google.com/gsi/client" async defer></script>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
 
-        <script src="js/api.js"></script>
-        <script src="js/sheets.js"></script>
-        <script src="js/factura.js"></script>
+    <script src="js/api.js"></script>
+    <script src="js/sheets.js"></script>
+    <script src="js/factura.js"></script>
 </body>
 
 </html>
